@@ -5,14 +5,14 @@
 GraphNode::GraphNode(int id)
 {
     _id = id;
-    std::cout << "GraphNode Constructor" << std::endl;
+    //std::cout << "GraphNode Constructor" << std::endl;
 }
 
 GraphNode::~GraphNode()
 {
     //// STUDENT CODE
     ////
-    std::cout << "GraphNode Destructor" << std::endl;
+    //std::cout << "GraphNode Destructor" << std::endl;
     //delete _chatBot; 
 
     ////
@@ -44,7 +44,7 @@ void GraphNode::MoveChatbotHere(ChatBot chatbot)
 {
     _chatBot = std::move(chatbot);
     _chatBot.SetCurrentNode(this);
-    std::cout << "chatbot nodes: " << _chatBot.GetCurrentNode()->GetID() << " | " << _chatBot.GetRootNode()->GetID() << std::endl;
+    //std::cout << "chatbot nodes: " << _chatBot.GetCurrentNode()->GetID() << " | " << _chatBot.GetRootNode()->GetID() << std::endl;
 }
 
 void GraphNode::MoveChatbotToNewNode(GraphNode *newNode)
