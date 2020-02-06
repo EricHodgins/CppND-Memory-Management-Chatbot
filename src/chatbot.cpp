@@ -21,6 +21,7 @@ ChatBot::ChatBot()
 ChatBot::ChatBot(std::string filename)
 {
     std::cout << "ChatBot Constructor" << std::endl;
+    filename_ = filename;
     
     // invalidate data handles
     _chatLogic = nullptr;
@@ -32,7 +33,7 @@ ChatBot::ChatBot(std::string filename)
 
 ChatBot::~ChatBot()
 {
-    std::cout << "ChatBot Destructor" << std::endl;
+    std::cout << "ChatBot Destructor: " << this << std::endl;
 
     // deallocate heap memory
     if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
@@ -45,6 +46,74 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
+ChatBot::ChatBot(const ChatBot &source) {
+    std::cout << "COPYING instance of ChatBot " << &source << " to instance " << this << std::endl;
+    std::cout << "\t" << source._currentNode << ", " << source._rootNode << ", " << source._chatLogic << std::endl;
+    _image = new wxBitmap(source.filename_, wxBITMAP_TYPE_PNG);
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    filename_ = source.filename_;
+}
+
+ChatBot &ChatBot::operator=(const ChatBot &source) {
+    std::cout << "ASSIGNING content of ChatBot " << &source << " to instance " << this<< std::endl;
+    std::cout << "\t" << source._currentNode << ", " << source._rootNode << ", " << source._chatLogic << std::endl;
+    if (this == &source) {
+        return *this;
+    }
+
+    delete _image;
+    //_currentNode = nullptr;
+    //_rootNode = nullptr;
+
+    _image = new wxBitmap(source.filename_, wxBITMAP_TYPE_PNG);
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    filename_ = source.filename_;
+
+    return *this;
+}
+
+ChatBot::ChatBot(ChatBot &&source) {
+    std::cout << "MOVING ChatBot Constructor " << &source << " to instance " << this << std::endl;
+    std::cout << "\t" << source._currentNode << ", " << source._rootNode << ", " << source._chatLogic << std::endl;
+    //_image = source._image;
+    _image = new wxBitmap(source.filename_, wxBITMAP_TYPE_PNG);
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    filename_ = source.filename_;
+/*
+    source._image = nullptr;
+    source._currentNode = nullptr;
+    source._rootNode = nullptr;
+    source._chatLogic = nullptr;
+*/    
+}
+
+ChatBot &ChatBot::operator=(ChatBot &&source) {
+    std::cout << "MOVING (assign) ChatBot " << &source << " to instance " << this << std::endl;
+    std::cout << "\t" << source._currentNode << ", " << source._rootNode << ", " << source._chatLogic << std::endl;
+    if (this == &source) return *this;
+    delete _image;
+
+    //_image = source._image;
+    _image = new wxBitmap(source.filename_, wxBITMAP_TYPE_PNG);
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    filename_ = source.filename_;
+/*
+    source._image = nullptr;
+    source._currentNode = nullptr;
+    source._rootNode = nullptr;
+    source._chatLogic = nullptr;
+*/
+    return *this;
+}
+
 ////
 //// EOF STUDENT CODE
 
@@ -53,7 +122,7 @@ void ChatBot::ReceiveMessageFromUser(std::string message)
     // loop over all edges and keywords and compute Levenshtein distance to query
     typedef std::pair<GraphEdge *, int> EdgeDist;
     std::vector<EdgeDist> levDists; // format is <ptr,levDist>
-
+    std::cout << this << " - " << _currentNode->GetID() << std::endl;
     for (size_t i = 0; i < _currentNode->GetNumberOfChildEdges(); ++i)
     {
         GraphEdge *edge = _currentNode->GetChildEdgeAtIndex(i);
@@ -77,6 +146,8 @@ void ChatBot::ReceiveMessageFromUser(std::string message)
         // go back to root node
         newNode = _rootNode;
     }
+
+    std::cout << "ChatBot:ReceiveMessageFromUser() - before move:" << std::endl;
 
     // tell current node to move chatbot to new node
     _currentNode->MoveChatbotToNewNode(newNode);
